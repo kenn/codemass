@@ -1,0 +1,54 @@
+{
+  "name": "codemass",
+  "version": "0.1.0",
+  "description": "Weigh your code in tokens - calculate AI API costs for your codebase",
+  "keywords": [
+    "tokens",
+    "tiktoken",
+    "openai",
+    "gpt",
+    "cli",
+    "code-analysis",
+    "cost",
+    "weight"
+  ],
+  "author": "Kenn Ejima",
+  "license": "MIT",
+  "homepage": "https://github.com/kenn/codemass#readme",
+  "bugs": {
+    "url": "https://github.com/kenn/codemass/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "codemass": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsx build.ts",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "ignore": "^6.0.2",
+    "js-tiktoken": "^1.0.20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.17.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kenn/codemass"
+  }
+}
