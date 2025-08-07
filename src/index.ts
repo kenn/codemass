@@ -318,7 +318,5 @@ function main() {
   console.log('='.repeat(80))
 }
 
-// Only run main if this is the entry point
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main()
-}
+// Run main when executed directly (not imported)
+main()
