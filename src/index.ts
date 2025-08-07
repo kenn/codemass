@@ -5,7 +5,7 @@ import ignore from 'ignore'
 import { getEncoding } from 'js-tiktoken'
 import { BASE_IGNORE_PATTERNS, EXCLUDABLE_EXTENSIONS } from './excludes.js'
 import type { FileStats, CliArgs } from './types.js'
-import { formatNumber, formatBytes, isBinary } from './utils.js'
+import { formatNumber, formatBytes, isBinary, errorMessage } from './utils.js'
 import { getModelPricing, formatModelList, DEFAULT_MODEL } from './pricing.js'
 
 const encoding = getEncoding('o200k_base')
@@ -31,7 +31,7 @@ ARGUMENTS:
 EXAMPLES:
   npx codemass                        # All text files with default model
   npx codemass --model gpt-4o         # Use GPT-4o pricing
-  npx codemass --no-json --no-yaml   # Exclude JSON and YAML
+  npx codemass --no-json --no-yaml    # Exclude JSON and YAML
   npx codemass --exclude .test.js     # Exclude test files
   npx codemass --list-models          # Show all available models
 
@@ -39,10 +39,6 @@ Note: Counts all non-binary text files by default.
       Always respects .gitignore patterns.
       Token count uses OpenAI's o200k_base tokenizer.
 `
-
-function showHelp() {
-  console.log(HELP)
-}
 
 function loadIgnorePatterns(dir: string) {
   let ig = ignore().add(BASE_IGNORE_PATTERNS)
@@ -113,46 +109,53 @@ function scanFiles(
 
   let results: FileStats[] = []
 
+  let files: string[]
   try {
-    for (let file of readdirSync(dir)) {
-      let filePath = join(dir, file)
-      let relativePath = relative(baseDir, filePath)
+    files = readdirSync(dir)
+  } catch (error: any) {
+    if (error.code === 'EPERM' || error.code === 'EACCES') {
+      console.error(errorMessage(`Error: Permission denied accessing ${relative(baseDir, dir)}`))
+      process.exit(1)
+    }
+    throw error
+  }
 
-      if (ig.ignores(relativePath)) continue
+  for (let file of files) {
+    let filePath = join(dir, file)
+    let relativePath = relative(baseDir, filePath)
 
-      let stat = statSync(filePath)
+    if (ig.ignores(relativePath)) continue
 
-      if (stat.isDirectory()) {
-        results.push(...scanFiles(filePath, baseDir, ig, excludeInfo))
-      } else {
-        const ext = extname(filePath).toLowerCase()
-        const filename = file.toLowerCase()
+    let stat = statSync(filePath)
 
-        // Skip if extension is excluded
-        if (excludeInfo.extensions.has(ext)) continue
+    if (stat.isDirectory()) {
+      results.push(...scanFiles(filePath, baseDir, ig, excludeInfo))
+    } else {
+      const ext = extname(filePath).toLowerCase()
+      const filename = file.toLowerCase()
 
-        // Skip if matches any exclude pattern
-        const matchesPattern = excludeInfo.patterns.some((pattern) => {
-          if (pattern.includes('.test.') && filename.includes('.test.'))
-            return true
-          if (pattern.includes('.spec.') && filename.includes('.spec.'))
-            return true
-          return false
-        })
-        if (matchesPattern) continue
+      // Skip if extension is excluded
+      if (excludeInfo.extensions.has(ext)) continue
 
-        // Skip binary files
-        if (isBinary(filePath)) continue
+      // Skip if matches any exclude pattern
+      const matchesPattern = excludeInfo.patterns.some((pattern) => {
+        if (pattern.includes('.test.') && filename.includes('.test.'))
+          return true
+        if (pattern.includes('.spec.') && filename.includes('.spec.'))
+          return true
+        return false
+      })
+      if (matchesPattern) continue
 
-        // Count tokens for all text files
-        let tokens = countTokens(filePath)
-        if (tokens > 0) {
-          results.push({ path: relativePath, tokens, size: stat.size })
-        }
+      // Skip binary files
+      if (isBinary(filePath)) continue
+
+      // Count tokens for all text files
+      let tokens = countTokens(filePath)
+      if (tokens > 0) {
+        results.push({ path: relativePath, tokens, size: stat.size })
       }
     }
-  } catch (error) {
-    console.error(`Error scanning ${dir}:`, error)
   }
 
   return results
@@ -191,7 +194,7 @@ function main() {
   let args = parseArgs()
 
   if (args.help) {
-    showHelp()
+    console.log(HELP)
     process.exit(0)
   }
 

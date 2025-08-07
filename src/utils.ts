@@ -20,3 +20,7 @@ export function isBinary(filePath: string): boolean {
     return true
   }
 }
+
+export function errorMessage(msg: string): string {
+  return `\x1b[31m${msg}\x1b[0m`
+}
