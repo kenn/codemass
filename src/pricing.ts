@@ -19,6 +19,21 @@ export const MODELS: Record<string, ModelPricing> = {
   },
 
   // OpenAI GPT Models
+  'gpt-5': {
+    name: 'gpt-5',
+    inputCost: 1.25,
+    outputCost: 10.0,
+  },
+  'gpt-5-mini': {
+    name: 'gpt-5-mini',
+    inputCost: 0.25,
+    outputCost: 2.0,
+  },
+  'gpt-5-nano': {
+    name: 'gpt-5-nano',
+    inputCost: 0.05,
+    outputCost: 0.4,
+  },
   o3: {
     name: 'o3',
     inputCost: 2.0,
@@ -88,10 +103,10 @@ export function listModels(): string[] {
 export function formatModelList(): string {
   // Group models by price tier
   const premium = ['opus-4']
-  const professional = ['sonnet-4', 'o3', 'gpt-4.1', 'gemini-2.5-pro']
+  const professional = ['sonnet-4', 'o3', 'gpt-4.1', 'gpt-5', 'gemini-2.5-pro']
   const standard = ['o4-mini']
-  const budget = ['gpt-4.1-mini', 'gemini-2.5-flash']
-  const minimal = ['gpt-4.1-nano', 'gemini-2.5-flash-lite']
+  const budget = ['gpt-4.1-mini', 'gpt-5-mini', 'gemini-2.5-flash']
+  const minimal = ['gpt-4.1-nano', 'gpt-5-nano', 'gemini-2.5-flash-lite']
 
   const formatGroup = (title: string, ids: string[]) => {
     const header = `\n${title}:\n`
