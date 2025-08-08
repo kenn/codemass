@@ -53,16 +53,16 @@ npx codemass --list-models
 
 ## Supported Models
 
-| Model | Input $/1M | Output $/1M |
-|-------|------------|-------------|
-| **Claude Opus 4** | $15.00 | $75.00 |
-| **Claude Sonnet 4** (default) | $3.00 | $15.00 |
-| **GPT-5** | $1.25 | $10.00 |
-| **Gemini 2.5 Pro** | $1.25 | $10.00 |
-| **Gemini 2.5 Flash** | $0.30 | $2.50 |
-| **GPT-5 mini** | $0.25 | $2.00 |
-| **Gemini 2.5 Flash-Lite** | $0.10 | $0.40 |
-| **GPT-5 nano** | $0.05 | $0.40 |
+| Model                         | Input $/1M | Output $/1M |
+| ----------------------------- | ---------- | ----------- |
+| **Claude Opus 4**             | $15.00     | $75.00      |
+| **Claude Sonnet 4** (default) | $3.00      | $15.00      |
+| **Gemini 2.5 Pro**            | $1.25      | $10.00      |
+| **GPT-5**                     | $1.25      | $10.00      |
+| **Gemini 2.5 Flash**          | $0.30      | $2.50       |
+| **GPT-5 mini**                | $0.25      | $2.00       |
+| **Gemini 2.5 Flash-Lite**     | $0.10      | $0.40       |
+| **GPT-5 nano**                | $0.05      | $0.40       |
 
 ## How It Works
 
