@@ -16,7 +16,7 @@ describe('isBinary', () => {
   it('should detect binary vs text files', () => {
     vi.mocked(fs.readFileSync).mockReturnValue(Buffer.from([0x00, 0x01, 0x02]))
     expect(isBinary('/test.bin')).toBe(true)
-    
+
     vi.mocked(fs.readFileSync).mockReturnValue(Buffer.from('Hello world'))
     expect(isBinary('/test.txt')).toBe(false)
   })

@@ -114,7 +114,11 @@ function scanFiles(
     files = readdirSync(dir)
   } catch (error: any) {
     if (error.code === 'EPERM' || error.code === 'EACCES') {
-      console.error(errorMessage(`Error: Permission denied accessing ${relative(baseDir, dir)}`))
+      console.error(
+        errorMessage(
+          `Error: Permission denied accessing ${relative(baseDir, dir)}`
+        )
+      )
       process.exit(1)
     }
     throw error
