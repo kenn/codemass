@@ -1,6 +1,6 @@
 {
   "name": "codemass",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Weigh your code in tokens - calculate AI API costs for your codebase",
   "keywords": [
     "tokens",
