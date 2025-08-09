@@ -3,7 +3,6 @@ import {
   getModelPricing,
   listModels,
   formatModelList,
-  DEFAULT_MODEL,
   MODELS,
 } from './pricing.js'
 
@@ -21,9 +20,9 @@ describe('pricing module', () => {
       expect(claude.inputCost).toBe(15.0)
       expect(claude.outputCost).toBe(75.0)
 
-      const gptMini = getModelPricing('gpt-4.1-mini')
-      expect(gptMini.inputCost).toBe(0.4)
-      expect(gptMini.outputCost).toBe(1.6)
+      const gptMini = getModelPricing('gpt-5-mini')
+      expect(gptMini.inputCost).toBe(0.25)
+      expect(gptMini.outputCost).toBe(2.0)
     })
 
     it('should throw error for unknown model', () => {
@@ -35,9 +34,9 @@ describe('pricing module', () => {
     it('should return all model IDs', () => {
       const models = listModels()
       expect(models).toContain('opus-4')
-      expect(models).toContain('o3')
-      expect(models).toContain('gpt-4.1')
-      expect(models.length).toBeGreaterThan(5)
+      expect(models).toContain('gpt-5')
+      expect(models).toContain('gpt-5-mini')
+      expect(models.length).toBe(8)
     })
   })
 
@@ -54,9 +53,12 @@ describe('pricing module', () => {
 
   describe('pricing accuracy', () => {
     it('should have correct OpenAI model pricing', () => {
-      expect(MODELS['o3'].inputCost).toBe(2.0)
-      expect(MODELS['gpt-4.1'].outputCost).toBe(8.0)
-      expect(MODELS['gpt-4.1-nano'].inputCost).toBe(0.1)
+      expect(MODELS['gpt-5'].inputCost).toBe(1.25)
+      expect(MODELS['gpt-5'].outputCost).toBe(10.0)
+      expect(MODELS['gpt-5-mini'].inputCost).toBe(0.25)
+      expect(MODELS['gpt-5-mini'].outputCost).toBe(2.0)
+      expect(MODELS['gpt-5-nano'].inputCost).toBe(0.05)
+      expect(MODELS['gpt-5-nano'].outputCost).toBe(0.4)
     })
 
     it('should have correct Claude model pricing', () => {

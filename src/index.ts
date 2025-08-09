@@ -2,13 +2,11 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { extname, join, relative } from 'node:path'
 import ignore from 'ignore'
-import { getEncoding } from 'js-tiktoken'
 import { BASE_IGNORE_PATTERNS, EXCLUDABLE_EXTENSIONS } from './excludes.js'
 import type { FileStats, CliArgs } from './types.js'
 import { formatNumber, formatBytes, isBinary, errorMessage } from './utils.js'
 import { getModelPricing, formatModelList, DEFAULT_MODEL } from './pricing.js'
-
-const encoding = getEncoding('o200k_base')
+import { countTokens } from './tokenizer.js'
 
 const HELP = `
 codemass - Weigh your code in tokens ⚖️
@@ -86,16 +84,6 @@ function getExcludePatterns(args: CliArgs): {
   }
 
   return { extensions, patterns }
-}
-
-export function countTokens(filePath: string): number {
-  try {
-    let content = readFileSync(filePath, 'utf-8')
-    return encoding.encode(content).length
-  } catch (error) {
-    console.error(`Error reading ${filePath}:`, error)
-    return 0
-  }
 }
 
 function scanFiles(
@@ -325,5 +313,5 @@ function main() {
   console.log('='.repeat(80))
 }
 
-// Run main when executed directly (not imported)
+// Run main
 main()
