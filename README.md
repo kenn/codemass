@@ -1,5 +1,7 @@
 # codemass
 
+![codemass logo](/kenn/codemass/raw/main/images/logo.png)
+
 ⚖️ Weigh your code in tokens - calculate AI API costs for your codebase before feeding it to LLMs.
 
 ## Features
