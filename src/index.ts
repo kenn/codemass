@@ -11,7 +11,7 @@ import { countTokens } from './tokenizer.js'
 const HELP_FOOTER = `
 EXAMPLES:
   npx codemass                        # All text files with default model
-  npx codemass --model gpt-4o         # Use GPT-4o pricing
+  npx codemass --model gpt-5.2        # Use GPT-5.2 pricing
   npx codemass --no-json --no-yaml    # Exclude JSON and YAML
   npx codemass --exclude .test.js     # Exclude test files
   npx codemass --list-models          # Show all available models

@@ -4,25 +4,30 @@ export interface ModelPricing {
   outputCost: number // $ per 1M tokens
 }
 
-// Pricing data for latest LLM models
+// Pricing data for latest LLM models (December 2025)
 export const MODELS: Record<string, ModelPricing> = {
   // Anthropic Models
-  'opus-4': {
-    name: 'Claude Opus 4',
-    inputCost: 15.0,
-    outputCost: 75.0,
+  'opus-4.5': {
+    name: 'Claude Opus 4.5',
+    inputCost: 5.0,
+    outputCost: 25.0,
   },
-  'sonnet-4': {
-    name: 'Claude Sonnet 4',
+  'sonnet-4.5': {
+    name: 'Claude Sonnet 4.5',
     inputCost: 3.0,
     outputCost: 15.0,
   },
+  'haiku-4.5': {
+    name: 'Claude Haiku 4.5',
+    inputCost: 1.0,
+    outputCost: 5.0,
+  },
 
   // OpenAI Models
-  'gpt-5': {
-    name: 'GPT-5',
-    inputCost: 1.25,
-    outputCost: 10.0,
+  'gpt-5.2': {
+    name: 'GPT-5.2',
+    inputCost: 1.75,
+    outputCost: 14.0,
   },
   'gpt-5-mini': {
     name: 'GPT-5 mini',
@@ -36,25 +41,20 @@ export const MODELS: Record<string, ModelPricing> = {
   },
 
   // Google Models
-  'gemini-2.5-pro': {
-    name: 'Gemini 2.5 Pro',
-    inputCost: 1.25,
-    outputCost: 10.0,
+  'gemini-3-pro': {
+    name: 'Gemini 3 Pro',
+    inputCost: 2.0,
+    outputCost: 12.0,
   },
-  'gemini-2.5-flash': {
-    name: 'Gemini 2.5 Flash',
-    inputCost: 0.3,
-    outputCost: 2.5,
-  },
-  'gemini-2.5-flash-lite': {
-    name: 'Gemini 2.5 Flash-Lite',
-    inputCost: 0.1,
-    outputCost: 0.4,
+  'gemini-3-flash': {
+    name: 'Gemini 3 Flash',
+    inputCost: 0.5,
+    outputCost: 3.0,
   },
 }
 
-// Default model (Sonnet 4 - good balance of cost and capability)
-export const DEFAULT_MODEL = 'sonnet-4'
+// Default model (Sonnet 4.5 - good balance of cost and capability)
+export const DEFAULT_MODEL = 'sonnet-4.5'
 
 export function getModelPricing(modelId?: string): ModelPricing {
   const id = modelId || DEFAULT_MODEL
@@ -77,10 +77,10 @@ export function listModels(): string[] {
 
 export function formatModelList(): string {
   // Group models by price tier - consolidated structure without standard tier
-  const premium = ['opus-4']
-  const professional = ['sonnet-4', 'gpt-5', 'gemini-2.5-pro']
-  const budget = ['gpt-5-mini', 'gemini-2.5-flash']
-  const minimal = ['gpt-5-nano', 'gemini-2.5-flash-lite']
+  const premium = ['opus-4.5', 'gemini-3-pro']
+  const professional = ['sonnet-4.5', 'gpt-5.2']
+  const budget = ['haiku-4.5', 'gemini-3-flash']
+  const minimal = ['gpt-5-mini', 'gpt-5-nano']
 
   const formatGroup = (title: string, ids: string[]) => {
     const header = `\n${title}:\n`
