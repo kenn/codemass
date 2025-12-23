@@ -32,14 +32,17 @@
     "dev": "tsx src/index.ts",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm build && pnpm test -- --run",
+    "np": "np"
   },
   "dependencies": {
+    "commander": "^12.1.0",
     "ignore": "^7.0.5",
     "js-tiktoken": "^1.0.21"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "np": "^10.2.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"

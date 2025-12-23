@@ -1,31 +1,14 @@
 #!/usr/bin/env node
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { extname, join, relative } from 'node:path'
+import { Command } from 'commander'
 import ignore from 'ignore'
 import { BASE_IGNORE_PATTERNS, EXCLUDABLE_EXTENSIONS } from './excludes.js'
-import type { FileStats, CliArgs } from './types.js'
 import { formatNumber, formatBytes, isBinary, errorMessage } from './utils.js'
 import { getModelPricing, formatModelList, DEFAULT_MODEL } from './pricing.js'
 import { countTokens } from './tokenizer.js'
 
-const HELP = `
-codemass - Weigh your code in tokens ⚖️
-
-USAGE:
-  npx codemass [path] [options]
-  
-OPTIONS:
-  -h, --help         Show this help message
-  --exclude <exts>   Exclude specific extensions (comma-separated)
-  --no-json          Exclude JSON files
-  --no-markdown      Exclude Markdown files  
-  --no-yaml          Exclude YAML files
-  --model <id>       Choose LLM model for pricing (default: ${DEFAULT_MODEL})
-  --list-models      List available models and pricing
-  
-ARGUMENTS:
-  path               Directory to analyze (default: current directory)
-
+const HELP_FOOTER = `
 EXAMPLES:
   npx codemass                        # All text files with default model
   npx codemass --model gpt-4o         # Use GPT-4o pricing
@@ -48,7 +31,14 @@ function loadIgnorePatterns(dir: string) {
   return ig
 }
 
-function getExcludePatterns(args: CliArgs): {
+type ExcludeValues = {
+  exclude?: string[]
+  json: boolean
+  markdown: boolean
+  yaml: boolean
+}
+
+function getExcludePatterns(values: ExcludeValues): {
   extensions: Set<string>
   patterns: string[]
 } {
@@ -56,8 +46,8 @@ function getExcludePatterns(args: CliArgs): {
   let patterns: string[] = []
 
   // Add excluded extensions/patterns from CLI
-  if (args.exclude) {
-    args.exclude.forEach((item: string) => {
+  if (values.exclude) {
+    values.exclude.forEach((item: string) => {
       if (
         item.includes('*') ||
         item.includes('.test.') ||
@@ -71,19 +61,25 @@ function getExcludePatterns(args: CliArgs): {
   }
 
   // Exclude based on flags
-  if (args.noJson) {
+  if (!values.json) {
     EXCLUDABLE_EXTENSIONS.json.forEach((ext) => extensions.add(ext))
   }
 
-  if (args.noMarkdown) {
+  if (!values.markdown) {
     EXCLUDABLE_EXTENSIONS.markdown.forEach((ext) => extensions.add(ext))
   }
 
-  if (args.noYaml) {
+  if (!values.yaml) {
     EXCLUDABLE_EXTENSIONS.yaml.forEach((ext) => extensions.add(ext))
   }
 
   return { extensions, patterns }
+}
+
+type FileStats = {
+  path: string
+  tokens: number
+  size: number
 }
 
 function scanFiles(
@@ -153,50 +149,44 @@ function scanFiles(
   return results
 }
 
-// Parse CLI arguments
-function parseArgs(): CliArgs {
-  let args = process.argv.slice(2)
-  let result: CliArgs = {}
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === '-h' || args[i] === '--help') {
-      result.help = true
-    } else if (args[i] === '--exclude' && i + 1 < args.length) {
-      result.exclude = args[++i].split(',')
-    } else if (args[i] === '--no-json') {
-      result.noJson = true
-    } else if (args[i] === '--no-markdown' || args[i] === '--no-md') {
-      result.noMarkdown = true
-    } else if (args[i] === '--no-yaml') {
-      result.noYaml = true
-    } else if (args[i] === '--model' && i + 1 < args.length) {
-      result.model = args[++i]
-    } else if (args[i] === '--list-models') {
-      result.listModels = true
-    } else if (!result.path && !args[i].startsWith('-')) {
-      result.path = args[i]
-    }
-  }
-
-  return result
-}
+const program = new Command()
+program
+  .name('codemass')
+  .description(
+    'Weigh your code in tokens - calculate AI API costs for your codebase'
+  )
+  .version('0.1.5')
+  .usage('[path] [options]')
+  .argument('[path]', 'Directory to analyze (default: current directory)')
+  .option(
+    '--exclude <exts>',
+    'Exclude specific extensions (comma-separated)',
+    (value) => value.split(',')
+  )
+  .option('--no-json', 'Exclude JSON files')
+  .option('--no-markdown', 'Exclude Markdown files')
+  .option('--no-md', 'Exclude Markdown files')
+  .option('--no-yaml', 'Exclude YAML files')
+  .option(
+    '-m, --model <id>',
+    `Choose LLM model for pricing (default: ${DEFAULT_MODEL})`,
+    DEFAULT_MODEL
+  )
+  .option('--list-models', 'List available models and pricing')
+  .addHelpText('after', `\n${HELP_FOOTER.trim()}\n`)
 
 // Main execution
 function main() {
-  let args = parseArgs()
+  program.parse(process.argv)
+  const opts = program.opts()
 
-  if (args.help) {
-    console.log(HELP)
-    process.exit(0)
-  }
-
-  if (args.listModels) {
+  if (opts.listModels) {
     console.log('\nAvailable Models:\n')
     console.log(formatModelList())
     process.exit(0)
   }
 
-  const projectRoot = args.path ? args.path : process.cwd()
+  const projectRoot = program.args[0] ?? process.cwd()
 
   if (!existsSync(projectRoot)) {
     console.error(`Error: Path "${projectRoot}" does not exist`)
@@ -205,7 +195,13 @@ function main() {
 
   console.log(`\n⚖️  Weighing: ${projectRoot}\n`)
 
-  const excludeInfo = getExcludePatterns(args)
+  const markdownEnabled = opts.markdown !== false && opts.md !== false
+  const excludeInfo = getExcludePatterns({
+    exclude: opts.exclude,
+    json: opts.json !== false,
+    markdown: markdownEnabled,
+    yaml: opts.yaml !== false,
+  })
 
   const files = scanFiles(
     projectRoot,
@@ -276,8 +272,8 @@ function main() {
 
   // Cost estimation based on selected model
   try {
-    const model = getModelPricing(args.model)
-    const modelId = args.model || DEFAULT_MODEL
+    const modelId = opts.model || DEFAULT_MODEL
+    const model = getModelPricing(modelId)
     const isOpenAI = modelId.startsWith('gpt') || modelId.startsWith('o')
 
     const inputCost = (totalTokens / 1_000_000) * model.inputCost
