@@ -18,7 +18,7 @@ describe('token counting', () => {
   })
 
   it('should count tokens in a file', async () => {
-    const { countTokens } = await import('./tokenizer.js')
+    const { countTokens } = await import('../src/tokenizer.js')
 
     vi.mocked(fs.readFileSync).mockReturnValue('Hello World')
     const tokens = countTokens('/test.txt')
@@ -27,7 +27,7 @@ describe('token counting', () => {
   })
 
   it('should handle file read errors', async () => {
-    const { countTokens } = await import('./tokenizer.js')
+    const { countTokens } = await import('../src/tokenizer.js')
 
     // Mock console.error to silence the error message
     const consoleErrorSpy = vi

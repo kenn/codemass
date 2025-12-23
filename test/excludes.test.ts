@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { BASE_IGNORE_PATTERNS, EXCLUDABLE_EXTENSIONS } from './excludes.js'
+import { BASE_IGNORE_PATTERNS, EXCLUDABLE_EXTENSIONS } from '../src/excludes.js'
 
 describe('excludes', () => {
   it('should have base ignore patterns', () => {

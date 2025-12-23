@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { formatBytes, isBinary } from './utils.js'
+import { formatBytes, isBinary } from '../src/utils.js'
 import * as fs from 'node:fs'
 
 vi.mock('node:fs')

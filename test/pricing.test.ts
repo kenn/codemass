@@ -4,7 +4,7 @@ import {
   listModels,
   formatModelList,
   MODELS,
-} from './pricing.js'
+} from '../src/pricing.js'
 
 describe('pricing module', () => {
   describe('getModelPricing', () => {

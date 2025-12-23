@@ -35,14 +35,14 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "ignore": "^6.0.2",
-    "js-tiktoken": "^1.0.20"
+    "ignore": "^7.0.5",
+    "js-tiktoken": "^1.0.21"
   },
   "devDependencies": {
-    "@types/node": "^22.17.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "@types/node": "^25.0.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": ">=18.0.0"
